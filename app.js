@@ -45,7 +45,18 @@ app.get('/', (req, res) => {
 })
 
 app.post('/add', (req, res) => {
-
+  try {
+    res.json({
+      itemName: req.body.itemName,
+      type: req.body.type,
+      lotNo: req.body.lotNo,
+      addDate: Date.now(),
+      expiredDate: Date.parse(req.body.expiredDate)
+    })
+  } catch (err) {
+    console.error(err)
+    res.json({error : 'something wrong on POST at /add path'})
+  }
 })
 
 app.post('/retrive', (req, res) => {
