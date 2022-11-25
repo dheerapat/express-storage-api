@@ -46,13 +46,27 @@ app.get('/', (req, res) => {
 
 app.post('/add', (req, res) => {
   try {
-    res.json({
+    let item = [
+      req.body.itemName,
+      req.body.type,
+      req.body.lotNo,
+      Date.now(),
+      Date.parse(req.body.expiredDate)
+    ]
+    db.run('INSERT INTO addItem (name, type, lotNo, addDate, expiredDate) VALUES(?,?,?,?,?)', item, (err) => {
+      if (err) {
+        console.err(err)
+      } else {
+        res.json({success: 'add item successfully'})
+      }
+    })
+/*     res.json({
       itemName: req.body.itemName,
       type: req.body.type,
       lotNo: req.body.lotNo,
       addDate: Date.now(),
       expiredDate: Date.parse(req.body.expiredDate)
-    })
+    }) */
   } catch (err) {
     console.error(err)
     res.json({error : 'something wrong on POST at /add path'})
@@ -64,7 +78,19 @@ app.post('/retrive', (req, res) => {
 })
 
 app.get('/stock/:itemName', (req, res) => {
-  
+  try {
+    let sqlStmt = `SELECT * FROM addItem WHERE name = "${req.params.itemName}"`
+    db.all(sqlStmt, [], (err, rows) => {
+      if (err) {
+        console.error(err)
+      } else {
+        res.json(rows)
+      }
+    })
+  } catch (error) {
+    console.error(err)
+    res.json({error: 'something wrong on GET at /stock path'})
+  }
 })
 
 app.listen(port, () => {
