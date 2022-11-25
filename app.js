@@ -55,7 +55,7 @@ app.post('/add', (req, res) => {
     ]
     db.run('INSERT INTO addItem (name, type, lotNo, addDate, expiredDate) VALUES(?,?,?,?,?)', item, (err) => {
       if (err) {
-        console.err(err)
+        console.error(err)
       } else {
         res.json({success: 'add item successfully'})
       }
@@ -69,7 +69,7 @@ app.post('/add', (req, res) => {
     }) */
   } catch (err) {
     console.error(err)
-    res.json({error : 'something wrong on POST at /add path'})
+    res.status(500).json({error : 'something wrong on POST at /add path'})
   }
 })
 
@@ -87,9 +87,9 @@ app.get('/stock/:itemName', (req, res) => {
         res.json(rows)
       }
     })
-  } catch (error) {
+  } catch (err) {
     console.error(err)
-    res.json({error: 'something wrong on GET at /stock path'})
+    res.status(500).json({error: 'something wrong on GET at /stock path'})
   }
 })
 
