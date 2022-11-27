@@ -77,9 +77,26 @@ app.post('/retrive', (req, res) => {
 
 })
 
-app.get('/stock/:itemName', (req, res) => {
+/* app.get('/stock', (req, res) => {
+  db.all('SELECT * FROM addItem', [], (err, rows) => {
+    if (err) {
+      console.error(err)
+    } else {
+      res.json(rows)
+    }
+  })
+}) */
+
+app.get('/stock/:itemName?', (req, res) => {
   try {
-    let sqlStmt = `SELECT * FROM addItem WHERE name = "${req.params.itemName}"`
+    let sqlStmt;
+
+    if (req.params.itemName) {
+      sqlStmt = `SELECT * FROM addItem WHERE name = "${req.params.itemName}"`
+    } else {
+      sqlStmt = `SELECT * FROM addItem`
+    }
+
     db.all(sqlStmt, [], (err, rows) => {
       if (err) {
         console.error(err)
