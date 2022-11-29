@@ -73,6 +73,14 @@ app.post('/withdraw', (req, res) => {
       req.body.itemName,
       Date.now()
     ]
+
+    db.run('INSERT INTO withdrawItem (name, withdrawDate) VALUES(?,?)', withdraw, (err) => {
+      if (err) {
+        console.error(err)
+      } else {
+        res.json({success: 'withdraw item successfully'})
+      }
+    })
   } catch (err) {
     console.error(err)
     res.status(500).json({error : 'something wrong on POST at /withdraw path'})
