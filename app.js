@@ -90,6 +90,18 @@ app.post('/withdraw', (req, res) => {
 // ---retrieve data from database
 app.get('/stock/:itemName?', (req, res) => {
   try {
+    if (req.params.itemName) {
+      db.all('SELECT name, COUNT(*) AS count FROM withdrawItem WHERE name = ?',[req.params.itemName], (err, row) => {
+        if (err) {
+          console.error(err)
+        } else {
+          res.json(row)
+        }
+      })
+    } else {
+      res.send('TBE')
+    }
+/* 
     let sqlStmt;
 
     if (req.params.itemName) {
@@ -105,6 +117,7 @@ app.get('/stock/:itemName?', (req, res) => {
         res.json(rows)
       }
     })
+     */
   } catch (err) {
     console.error(err)
     res.status(500).json({error: 'something wrong on GET at /stock path'})
