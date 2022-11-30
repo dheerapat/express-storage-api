@@ -91,7 +91,6 @@ app.post('/withdraw', (req, res) => {
 app.get('/stock/:itemName?', (req, res) => {
   try {
     if (req.params.itemName) {
-
       db.get('SELECT name, COUNT(*) AS count FROM withdrawItem WHERE name = ?',[req.params.itemName], (err, wrow) => {
         if (err) {
           console.error(err)
@@ -114,6 +113,7 @@ app.get('/stock/:itemName?', (req, res) => {
         }
       })
     } else {
+      // to do : edit this accoding to plan
       db.all('SELECT * FROM addItem', [], (err, rows) => {
         if (err) {
           console.error(err)
@@ -122,23 +122,6 @@ app.get('/stock/:itemName?', (req, res) => {
         }
       })
     }
-/* 
-    let sqlStmt;
-
-    if (req.params.itemName) {
-      sqlStmt = `SELECT * FROM addItem WHERE name = "${req.params.itemName}"`
-    } else {
-      sqlStmt = `SELECT * FROM addItem`
-    }
-
-    db.all(sqlStmt, [], (err, rows) => {
-      if (err) {
-        console.error(err)
-      } else {
-        res.json(rows)
-      }
-    })
-     */
   } catch (err) {
     console.error(err)
     res.status(500).json({error: 'something wrong on GET at /stock path'})
