@@ -91,15 +91,43 @@ app.post('/withdraw', (req, res) => {
 app.get('/stock/:itemName?', (req, res) => {
   try {
     if (req.params.itemName) {
-      db.all('SELECT name, COUNT(*) AS count FROM withdrawItem WHERE name = ?',[req.params.itemName], (err, row) => {
+        db.get('SELECT name, COUNT(*) AS count FROM withdrawItem WHERE name = ?',[req.params.itemName], (err, wrow) => {
+          if (err) {
+            console.error(err)
+          } else {
+            db.get('SELECT name, COUNT(*) AS count FROM addItem WHERE name = ?',[req.params.itemName], (err, arow) => {
+              if (err) {
+                console.error(err)
+              } else {
+                let diff = arow.count - wrow.count
+                db.all('SELECT name, expiredDate FROM addItem WHERE name = ? ORDER BY expiredDate DESC LIMIT ?',
+                [req.params.itemName, diff], (err, rows) => {
+                  if (err) {
+                    console.error(err)
+                  } else {
+                    res.json(rows)
+                  }
+                })
+              }
+            })
+          }
+        })
+        /* db.get('SELECT name, COUNT(*) AS count FROM addItem WHERE name = ? ORDER BY expiredDate DESC LIMIT ?',
+        [req.params.itemName, (addTotal - withdrawTotal)], (err, row) => {
+          if (err) {
+            console.error(err)
+          } else {
+            res.json(row)
+          }
+        }) */
+    } else {
+      db.all('SELECT * FROM addItem', [], (err, rows) => {
         if (err) {
           console.error(err)
         } else {
-          res.json(row)
+          res.json(rows)
         }
       })
-    } else {
-      res.send('TBE')
     }
 /* 
     let sqlStmt;
