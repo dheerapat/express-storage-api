@@ -90,6 +90,7 @@ app.post('/withdraw', (req, res) => {
 // ---retrieve data from database
 app.get('/stock/:itemName?', (req, res) => {
   try {
+    // ---if itemName specified
     if (req.params.itemName) {
       db.get('SELECT name, COUNT(*) AS count FROM withdrawItem WHERE name = ?',[req.params.itemName], (err, wrow) => {
         if (err) {
@@ -113,12 +114,30 @@ app.get('/stock/:itemName?', (req, res) => {
         }
       })
     } else {
-      // to do : edit this accoding to plan
-      db.all('SELECT * FROM addItem', [], (err, rows) => {
+      db.all('SELECT name, COUNT(*) as count FROM addItem GROUP BY name', [], (err, arows) => {
         if (err) {
           console.error(err)
         } else {
-          res.json(rows)
+          db.all('SELECT name, COUNT(*) as count FROM withdrawItem GROUP BY name', [], (err, wrows) => {
+            if (err) {
+              console.error(err)
+            } else {
+              result = []
+              for (let i = 0; i < arows.length; i++) {
+                for (let j = 0; j < wrows.length; j++) {
+                  if (arows[i].name === wrows[j].name) {
+                    let diff = arows[i].count - wrows[j].count
+                    itemObj = {
+                      name: arows[i].name,
+                      count: diff
+                    }
+                    result.push(itemObj)
+                  }
+                }
+              }
+              res.send(result)
+            }
+          })
         }
       })
     }
